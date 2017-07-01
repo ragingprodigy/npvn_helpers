@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="links">
-                    <a href="{{ url('/bvn_check') }}">BVN Resolver</a>
+                    <a href="{{ secure_url('/bvn_check') }}">BVN Resolver</a>
                 </div>
             </div>
         </div>
