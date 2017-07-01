@@ -22,7 +22,7 @@
         @endforeach
     </ul>
 
-    {!! Form::open(['url' => 'bvn_check', 'enctype'=>'multipart/form-data']) !!}
+    {!! Form::open(['url' => secure_url('bvn_check'), 'enctype'=>'multipart/form-data']) !!}
 
         {!! Form::label('theFile', 'Select Excel File') !!}
 
