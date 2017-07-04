@@ -1,5 +1,8 @@
 <?php
 
+use GoogleMaps\Facade\GoogleMapsFacade;
+use GoogleMaps\ServiceProvider\GoogleMapsServiceProvider;
+
 return [
 
     /*
@@ -179,6 +182,8 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
+        GoogleMapsServiceProvider::class,
+
     ],
 
     /*
@@ -229,7 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-
+        'GoogleMaps' => GoogleMapsFacade::class
     ],
 
 ];

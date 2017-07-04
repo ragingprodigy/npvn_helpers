@@ -1,10 +1,11 @@
 <?php
 
+use App\Models\LocalGovernment;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateAllLgasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +14,15 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('npvn_users', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create(LocalGovernment::TABLE_NAME, function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('geocoded_address')->nullable();
+
             $table->timestamps();
+
+            $table->index('name');
+            $table->index('geocoded_address');
         });
     }
 
@@ -30,6 +33,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('npvn_users');
+        Schema::dropIfExists(LocalGovernment::TABLE_NAME);
     }
 }
