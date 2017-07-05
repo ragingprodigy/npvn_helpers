@@ -17,4 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('compare-sample', 'ApiController@compareSample');
 Route::post('compare-sheets', 'ApiController@compareSheets');
+
+Route::post('bvn-validator', 'ApiController@processUpload');

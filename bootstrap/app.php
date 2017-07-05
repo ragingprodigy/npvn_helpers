@@ -11,6 +11,8 @@
 |
 */
 
+ini_set('max_execution_time', 600);
+
 $app = new Illuminate\Foundation\Application(
     realpath(__DIR__.'/../')
 );
