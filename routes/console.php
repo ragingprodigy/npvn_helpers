@@ -158,7 +158,6 @@ Artisan::command('pickup-locations', function () {
         }
 
         asort($distances);
-//        $this->comment($location->name . ' => ' . print_r(array_slice($distances, 0, 5, true), true));
         $picked = array_slice($distances, 0, 5, true);
         $ct = [];
 
