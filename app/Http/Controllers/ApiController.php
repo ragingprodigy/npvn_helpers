@@ -10,12 +10,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use Maatwebsite\Excel\Writers\LaravelExcelWriter;
 
 class ApiController extends Controller
 {
+    /**
+     * @return mixed
+     */
     public function compareSample()
     {
         return Excel::create('sample_file', function ($writer) {
@@ -35,7 +39,7 @@ class ApiController extends Controller
                     'LAST NAME' => '-',
                 ]);
 
-                $sheet->with(json_decode(json_encode($data->all()), true));
+                $sheet->with($this->useInSheet($data->all()));
             });
         })->download('xlsx');
     }
@@ -46,7 +50,46 @@ class ApiController extends Controller
      */
     public function mergeSheets(Request $request)
     {
+        $fileContents = $this->fetchFilesFromRequest($request);
 
+        $setOne = collect($fileContents[0])->keyBy('bvn');
+        $setTwo = collect($fileContents[1])->keyBy('bvn');
+
+        $option = $request->get('option', 'A');
+        switch($option) {
+            case 'A':
+                // Get records only in set One
+                $newData = collect($setOne->filter(function ($row) use ($setTwo) {
+                    return $setTwo->get($row->bvn) === null;
+                }));
+                break;
+            case 'B':
+                // Keep set One constant and get records unique to set Two
+                $newData = collect($setTwo->filter(function ($row) use ($setOne) {
+                    return $setOne->get($row->bvn) === null;
+                }));
+                break;
+            case 'C':
+                // Fetch A n B
+                $newData = $setOne->intersectKey($setTwo);
+                break;
+            case 'D':
+            default:
+                // Fetch A u B
+                $newData = $setTwo->union($setOne)->unique('bvn');
+                break;
+        }
+
+        return Excel::create('merged_data', function (LaravelExcelWriter $excel) use ($newData) {
+            $excel->sheet('DATA', function(LaravelExcelWorksheet $sheet) use ($newData) {
+                $sheet->with($this->useInSheet($newData->all()));
+            });
+        })->download('xlsx');
+    }
+
+    private function useInSheet($data)
+    {
+        return json_decode(json_encode($data), true);
     }
 
 
@@ -87,7 +130,7 @@ class ApiController extends Controller
 
             Excel::create('processed', function ($excel) use ($data) {
                 $excel->sheet('PROCESSED_DATA', function ($sheet) use ($data) {
-                    $sheet->with(json_decode(json_encode($data), true));
+                    $sheet->with($this->useInSheet($data));
                 });
             })->download('xlsx');
         });
@@ -95,24 +138,11 @@ class ApiController extends Controller
 
     /**
      * @param Request $request
+     * @return mixed
      */
     public function compareSheets(Request $request)
     {
-        /** @var UploadedFile[] $files */
-        $files = $request->allFiles();
-        $fileNames = [];
-
-        foreach ($files as $file) {
-            $fileNames[] = $file->store('destination');
-        }
-
-        $fileContents = [];
-
-        foreach ($fileNames as $name) {
-            Excel::load('storage/app/' . $name, function (LaravelExcelReader $reader) use (&$fileContents) {
-                $fileContents[] = $reader->get();
-            });
-        }
+        $fileContents = $this->fetchFilesFromRequest($request);
 
         $setOne = collect($fileContents[0])->keyBy('bvn');
         $setTwo = collect($fileContents[1])->keyBy('bvn');
@@ -151,13 +181,38 @@ class ApiController extends Controller
             ]);
         });
 
-        unlink(base_path('storage/app/' . $fileNames[0]));
-        unlink(base_path('storage/app/' . $fileNames[1]));
-
-        Excel::create('resolved_names', function (LaravelExcelWriter $excel) use ($newData) {
+        return Excel::create('resolved_names', function (LaravelExcelWriter $excel) use ($newData) {
             $excel->sheet('Resolved Name Issues', function ($sheet) use ($newData) {
                 $sheet->with($newData->all());
             });
         })->download('xlsx');
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function fetchFilesFromRequest(Request $request)
+    {
+        /** @var UploadedFile[] $files */
+        $files = $request->allFiles();
+        $fileNames = [];
+
+        foreach ($files as $file) {
+            $fileNames[] = $file->store('destination');
+        }
+
+        $fileContents = [];
+
+        foreach ($fileNames as $name) {
+            Excel::load('storage/app/' . $name, function (LaravelExcelReader $reader) use (&$fileContents) {
+                $fileContents[] = $reader->get();
+            });
+        }
+
+        unlink(base_path('storage/app/' . $fileNames[0]));
+        unlink(base_path('storage/app/' . $fileNames[1]));
+
+        return $fileContents;
     }
 }
