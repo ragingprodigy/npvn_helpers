@@ -20,14 +20,33 @@ class ApiController extends Controller
     {
         return Excel::create('sample_file', function ($writer) {
             $writer->sheet('NAMES', function ($sheet) {
-                $sheet->with([
-                    'SN' => '',
-                    'FIRST NAME' => '',
-                    'MIDDLE NAME' => '',
-                    'LAST NAME' => '',
+                $data = collect();
+                $data->push([
+                    'SN' => '1',
+                    'FIRST NAME' => '-',
+                    'MIDDLE NAME' => '-',
+                    'LAST NAME' => '-',
                 ]);
+
+                $data->push([
+                    'SN' => '2',
+                    'FIRST NAME' => '-',
+                    'MIDDLE NAME' => '-',
+                    'LAST NAME' => '-',
+                ]);
+
+                $sheet->with(json_decode(json_encode($data->all()), true));
             });
         })->download('xlsx');
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function mergeSheets(Request $request)
+    {
+
     }
 
 

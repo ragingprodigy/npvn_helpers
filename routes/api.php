@@ -19,5 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('compare-sample', 'ApiController@compareSample');
 Route::post('compare-sheets', 'ApiController@compareSheets');
-
+Route::post('merge-special', 'ApiController@mergeSheets');
 Route::post('bvn-validator', 'ApiController@processUpload');
