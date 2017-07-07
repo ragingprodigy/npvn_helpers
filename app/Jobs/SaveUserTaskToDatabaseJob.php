@@ -18,8 +18,6 @@ class SaveUserTaskToDatabaseJob extends AbstractJob
 {
     public $retries = 3;
 
-    /** @var int $userId */
-    private $userId;
     /** @var string $taskName */
     private $taskName;
 
@@ -35,14 +33,12 @@ class SaveUserTaskToDatabaseJob extends AbstractJob
     /**
      * SaveUserTaskToDatabase constructor.
      *
-     * @param int    $userId
      * @param string $taskName
      * @param string $jobClassName
      * @param array  $jobArgs
      * @param string $queue
      */
     public function __construct(
-        int $userId,
         string $taskName,
         string $jobClassName,
         array $jobArgs = [],
@@ -50,7 +46,6 @@ class SaveUserTaskToDatabaseJob extends AbstractJob
     ) {
         parent::__construct();
 
-        $this->userId       = $userId;
         $this->taskName     = $taskName;
         $this->jobClassName = $jobClassName;
         $this->jobArguments = $jobArgs;
