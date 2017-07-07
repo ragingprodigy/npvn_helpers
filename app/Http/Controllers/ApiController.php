@@ -68,45 +68,6 @@ class ApiController extends Controller
         return response('Task Accepted. Would be processed...');
     }
 
-//    public function mergeSheets(Request $request)
-//    {
-//        $fileContents = $this->fetchFilesFromRequest($request);
-//
-//        $setOne = collect($fileContents[0])->keyBy('bvn');
-//        $setTwo = collect($fileContents[1])->keyBy('bvn');
-//
-//        $option = $request->get('option', 'A');
-//        switch($option) {
-//            case 'A':
-//                // Get records only in set One
-//                $newData = collect($setOne->filter(function ($row) use ($setTwo) {
-//                    return $setTwo->get($row->bvn) === null;
-//                }));
-//                break;
-//            case 'B':
-//                // Keep set One constant and get records unique to set Two
-//                $newData = collect($setTwo->filter(function ($row) use ($setOne) {
-//                    return $setOne->get($row->bvn) === null;
-//                }));
-//                break;
-//            case 'C':
-//                // Fetch A n B
-//                $newData = $setOne->intersectKey($setTwo);
-//                break;
-//            case 'D':
-//            default:
-//                // Fetch A u B
-//                $newData = $setTwo->union($setOne)->unique('bvn');
-//                break;
-//        }
-//
-//        return Excel::create('merged_data', function (LaravelExcelWriter $excel) use ($newData) {
-//            $excel->sheet('DATA', function(LaravelExcelWorksheet $sheet) use ($newData) {
-//                $sheet->with($this->useInSheet($newData->all()));
-//            });
-//        })->download('xlsx');
-//    }
-
     private function useInSheet($data)
     {
         return json_decode(json_encode($data), true);
