@@ -9,9 +9,7 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Model;
-
-class Task extends Model
+class Task extends BaseModel
 {
     const CREATED       = 'IN QUEUE';
     const PROCESSING    = 'PROCESSING';
@@ -24,6 +22,6 @@ class Task extends Model
     protected $table    = self::TABLE_NAME;
 
     protected $fillable = [
-        'name', 'status'
+        'name', 'status', 'finished_at'
     ];
 }
