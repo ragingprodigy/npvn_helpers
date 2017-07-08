@@ -16,7 +16,7 @@ use Illuminate\Contracts\Bus\Dispatcher;
 
 class SaveUserTaskToDatabaseJob extends AbstractJob
 {
-    public $retries = 3;
+    public $tries = 3;
 
     /** @var string $taskName */
     private $taskName;

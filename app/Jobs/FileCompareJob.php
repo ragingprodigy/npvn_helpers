@@ -24,6 +24,9 @@ class FileCompareJob extends AbstractJob
     /** @var  string $compareOption */
     private $compareOption;
 
+    /** @var int $tries */
+    public $tries = 3;
+
     /**
      * FileCompareJob constructor.
      * @param array $arguments
