@@ -94,6 +94,21 @@ Artisan::command('lga-geocoding-task', function () {
     }
 });
 
+Artisan::command('code {name} {state}', function ($name, $state) {
+    $lga = LocalGovernment::whereName($name)->where('geocoded_address', null)->first();
+    if ($lga !== null) {
+        // Attempt to Geocode Addresses
+        $this->comment(sprintf('Doing lookup for %s, %s', $name, $state));
+        $lookup = geocodeAddress(sprintf('%s, %s', $name, $state));
+
+        if (count($lookup['results']) > 0) {
+            $lga->geocoded_address = implode(', ', $lookup['results'][0]['geometry']['location']);
+            $this->comment(sprintf('Coded %s, %s as %s', $name, $state, $lga->geocoded_address));
+            $lga->save();
+        }
+    }
+});
+
 /**
  * @param array $fromLocation
  * @param array $toLocation
