@@ -59,9 +59,19 @@ Artisan::command('load-lgas', function () {
 
         foreach ($rows as $key => $location) {
             if ($location[0] !== null) {
-                LocalGovernment::create(['name' => $location[0]]);
+//                LocalGovernment::create(['name' => $location[0]]);
+                $lga = LocalGovernment::whereName($location[0])->first();
+                if ($lga === null) {
+                    $this->comment(sprintf('Unable to load: %s', $location[0]));
+                    continue;
+                }
+
+                $lga->state = strtoupper($location[1]);
+                $lga->save();
             }
         }
+
+        $this->comment('Done');
     });
 });
 
@@ -158,7 +168,14 @@ Artisan::command('pickup-locations', function () {
     $locations->each(function ($location) use ($centers, &$data) {
         $distances = [];
 
-        foreach ($centers as $center) {
+        $filteredCenters = $centers->filter(function ($ct) use ($location) {
+            return $ct->state === $location->state;
+        })->all();
+
+        $this->comment(sprintf('%s has %d centeres in %s state', $location->name, count($filteredCenters),
+                               $location->state));
+
+        foreach ($filteredCenters as $center) {
             $consideredLocation = $center->geocoded_address ?? $center->lga->geocoded_address ?? '';
 
             if (!empty($consideredLocation)) {
@@ -185,16 +202,16 @@ Artisan::command('pickup-locations', function () {
 
         $data[] = [
             'LOCAL GOVERNMENT'  => $location->name,
-            'CENTER 1'          => $ct[0]['name'],
-            'DISTANCE 1'        => $ct[0]['dist'],
-            'CENTER 2'          => $ct[1]['name'],
-            'DISTANCE 2'        => $ct[1]['dist'],
-            'CENTER 3'          => $ct[2]['name'],
-            'DISTANCE 3'        => $ct[2]['dist'],
-            'CENTER 4'          => $ct[3]['name'],
-            'DISTANCE 4'        => $ct[3]['dist'],
-            'CENTER 5'          => $ct[4]['name'],
-            'DISTANCE 5'        => $ct[4]['dist'],
+            'CENTER 1'          => $ct[0]['name']??'',
+            'DISTANCE 1'        => $ct[0]['dist']??'',
+            'CENTER 2'          => $ct[1]['name']??'',
+            'DISTANCE 2'        => $ct[1]['dist']??'',
+            'CENTER 3'          => $ct[2]['name']??'',
+            'DISTANCE 3'        => $ct[2]['dist']??'',
+            'CENTER 4'          => $ct[3]['name']??'',
+            'DISTANCE 4'        => $ct[3]['dist']??'',
+            'CENTER 5'          => $ct[4]['name']??'',
+            'DISTANCE 5'        => $ct[4]['dist']??'',
         ];
     });
 
