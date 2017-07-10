@@ -44,7 +44,7 @@ Artisan::command('get-geocode {address}', function ($address) {
         ->setParam([
             'address' => $address,
             'components'  => [
-                'country'               => 'NG',
+                'country' => 'NG'
             ]
         ])
         ->get('results.geometry');
