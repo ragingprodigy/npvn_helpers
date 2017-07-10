@@ -13,7 +13,7 @@ class CreateUserTasksTable extends Migration
      */
     public function up()
     {
-        Schema::create(\App\Models\Task::TABLE_NAME, function (Blueprint $table) {
+        Schema::create('_' . \App\Models\Task::TABLE_NAME, function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->enum('status', \App\Models\Task::ALLOWED_STATUSES);

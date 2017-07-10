@@ -198,7 +198,7 @@ Artisan::command('pickup-locations', function () {
         ];
     });
 
-    Excel::create('pickup-locations', function ($excel) use ($data) {
+    Excel::create('pickup-locations-state-bound', function ($excel) use ($data) {
         $excel->sheet('All LGAs', function ($sheet) use ($data) {
             $sheet->with($data);
             $sheet->cells('A1:K1', function ($cells) {
@@ -225,6 +225,24 @@ Artisan::command('get-nearest {lga}', function ($lga) {
         asort($distances);
 
         $this->comment($lga->name . ' => ' . print_r(array_slice($distances, 0, 5, true), true));
+    }
+});
+
+Artisan::command('location-cleanup', function () {
+    $centers = CollectionCenter::where('geocoded_address', null)->get();
+
+    foreach ($centers as $center) {
+        // Attempt to Geocode Addresses
+        $this->comment(sprintf('Doing lookup for %s', $center->address));
+        $lookup = geocodeAddress($center->address);
+        $this->comment(sprintf('Lookup Complete!'));
+
+        if (count($lookup['results']) > 0) {
+            $center->geocoded_address = implode(', ', $lookup['results'][0]['geometry']['location']);
+            $center->save();
+
+            $this->comment('Coordinates updated');
+        }
     }
 });
 
