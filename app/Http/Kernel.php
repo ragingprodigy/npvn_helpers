@@ -15,11 +15,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        NpvnMiddleware::class,
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        NpvnMiddleware::class
     ];
 
     /**
@@ -38,13 +38,13 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
-
-        'jwt.auth' => 'Tymon\JWTAuth\Middleware\GetUserFromToken',
-        'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
-
         'api' => [
+
+            NpvnMiddleware::class,
             'throttle:60,1',
             'bindings',
+//            'jwt.auth' => 'Tymon\JWTAuth\Middleware\GetUserFromToken',
+//            'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
         ],
     ];
 

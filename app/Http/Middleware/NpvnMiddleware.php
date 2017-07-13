@@ -20,10 +20,7 @@ class NpvnMiddleware
      */
     public function handle($request, \Closure $next)
     {
-        $referrer = $_SERVER['HTTP_REFERER'] ?? '';
-        if (ends_with($referrer, '/')) {
-            $referrer = substr($referrer, 0, strlen($referrer) - 1);
-        }
+        $referrer = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? '';
 
         $headers  = [
             'Access-Control-Allow-Origin'      => $referrer,
