@@ -25,6 +25,6 @@ class Unbundling extends BaseModel
     ];
 
     protected $fillable = [
-        'power', 'accessories', 'assessment'
+        'power', 'accessories', 'assessment', 'certified_by'
     ];
 }

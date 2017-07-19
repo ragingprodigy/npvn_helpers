@@ -27,6 +27,7 @@ Route::post('devices', 'WarehouseController@registerDevice');
 Route::get('devices/{identifier}', 'WarehouseController@getDevice');
 Route::get('check-device/{imei}', 'WarehouseController@checkIMEI');
 
+Route::get('unbundle/{uuid}', 'WarehouseController@unbundle');
 Route::get('unbundling/{uuid}/{category}/{value}', 'WarehouseController@unbundling');
 
 

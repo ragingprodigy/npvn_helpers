@@ -14,6 +14,7 @@ use App\Models\Unbundling;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class WarehouseController
@@ -60,11 +61,32 @@ class WarehouseController extends Controller
 
     /**
      * @param string $uuid
+     * @return JsonResponse
+     */
+    public function unbundle(string $uuid): JsonResponse
+    {
+        $device = Device::with('unbundling')->whereUuid($uuid)->first();
+
+        if ($device->unbundling === null) {
+            throw new NotFoundHttpException('Device has not been checked');
+        }
+
+        $device->unbundling->certified_by = $this->getUserId();
+        $device->unbundling->save();
+
+        $device->unbundled = true;
+        $device->save();
+
+        return $this->jsonResponse($this->fetchDevice($device->uuid));
+    }
+
+    /**
+     * @param string $uuid
      * @param string $field
      * @param int $value
      * @return JsonResponse
      */
-    public function unbundling(string $uuid, string $field, int $value)
+    public function unbundling(string $uuid, string $field, int $value): JsonResponse
     {
         /** @var Device $device */
         $device = Device::with('unbundling')->whereUuid($uuid)->first();
