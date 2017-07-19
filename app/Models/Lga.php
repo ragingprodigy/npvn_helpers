@@ -17,6 +17,8 @@ class Lga extends BaseModel
     const TABLE_NAME = 'lgas';
     protected $table = self::TABLE_NAME;
 
+    public $timestamps = false;
+
     /**
      * @return BelongsTo
      */

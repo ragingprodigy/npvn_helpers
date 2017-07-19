@@ -254,7 +254,7 @@ class WarehouseController extends Controller
             }
         }
 
-        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller']);
+        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller', 'volunteer', 'volunteer.allocator']);
 
         return $device;
     }

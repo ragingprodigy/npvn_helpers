@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -47,7 +48,23 @@ class DeviceSelection extends BaseModel
      */
     public function device(): BelongsTo
     {
-        return $this->belongsTo(SelectableDevice::class, 'available_device_id');
+        return $this->belongsTo(Device::class, 'actual_device_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function allocator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'allocated_by');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function choice(): BelongsTo
+    {
+        return $this->belongsTo(SelectableDevice::class, 'avaliable_device_id');
     }
 
     /**

@@ -51,6 +51,14 @@ class Device extends BaseModel
         return static::where('imei', $data)->first();
     }
 
+    /**
+     * @return HasOne
+     */
+    public function volunteer(): HasOne
+    {
+        return $this->hasOne(DeviceSelection::class, 'actual_device_id');
+    }
+
     public function enroller()
     {
         return $this->belongsTo(User::class, 'enrolled_by');
