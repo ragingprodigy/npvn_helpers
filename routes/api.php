@@ -17,7 +17,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+/**
+ * Device Distro API
+ */
 Route::post('login', 'AuthController@login');
+Route::get('list-devices', 'WarehouseController@devices');
+
+
+/**
+ * Tools
+ */
 
 Route::get('tasks', 'TaskController@index');
 Route::get('tasks/{id}', 'TaskController@download');

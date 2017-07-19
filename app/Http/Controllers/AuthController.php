@@ -37,7 +37,7 @@ class AuthController extends Controller
         $payload = $request->only('email', 'password');
 
         if (! $token = $this->auth->attempt($payload)) {
-            return response()->json(['user_not_found' => 'You do not have access to this app yet'], 404);
+            return response()->json(['user_not_found' => 'Invalid Email and/or Password'], 404);
         }
 
         return response()->json(compact('token'));

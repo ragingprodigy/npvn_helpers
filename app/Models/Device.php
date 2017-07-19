@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Device extends BaseModel
 {
-    const TABLE_NAME = 'devices';
+    const TABLE_NAME = 'available_devices';
     protected $table = self::TABLE_NAME;
 
     /**
@@ -26,6 +26,6 @@ class Device extends BaseModel
      */
     public function selections(): HasMany
     {
-        return $this->hasMany(DeviceSelection::class, 'device_id');
+        return $this->hasMany(DeviceSelection::class, 'available_device_id');
     }
 }
