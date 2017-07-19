@@ -8,7 +8,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\AvailableDevice;
+use App\Models\Device;
+use App\Models\SelectableDevice;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -22,6 +23,35 @@ class WarehouseController extends Controller
      */
     public function devices(): JsonResponse
     {
-        return $this->jsonResponse(AvailableDevice::all());
+        return $this->jsonResponse(SelectableDevice::all());
+    }
+
+    /**
+     * @param string $imei
+     * @return JsonResponse
+     */
+    public function checkIMEI(string $imei)
+    {
+        return $this->jsonResponse(
+            [ 'exists' => Device::where('imei', $imei)->exists() ]
+        );
+    }
+
+    /**
+     * @param $identifier
+     * @return JsonResponse
+     */
+    public function getDevice($identifier): JsonResponse
+    {
+        $device = Device::where('uuid', $identifier);
+        if ($device === null) {
+            $device = Device::where('imei', $identifier)->orWhere('serial', $identifier);
+        }
+
+        if ($device === null) {
+            return $this->notFound();
+        }
+
+        return $this->jsonResponse($device);
     }
 }

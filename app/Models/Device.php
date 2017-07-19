@@ -9,9 +9,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Class Device
  * @package App\Models
+ *
+ * @method Builder|static       whereImei($value)
  */
 class Device extends BaseModel
 {

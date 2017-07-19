@@ -15,6 +15,7 @@ class CreateActualDevicesTable extends Migration
     {
         Schema::create(\App\Models\Device::TABLE_NAME, function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->uuid('uuid');
             $table->integer('available_device_id');
             $table->string('imei');
             $table->string('serial');
@@ -30,6 +31,8 @@ class CreateActualDevicesTable extends Migration
 
             $table->softDeletesTz();
             $table->timestampsTz();
+
+            $table->unique('uuid');
         });
     }
 

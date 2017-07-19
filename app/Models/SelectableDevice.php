@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int    $id
  * @property string $name
  */
-class AvailableDevice extends BaseModel
+class SelectableDevice extends BaseModel
 {
     const TABLE_NAME = 'available_devices';
     protected $table = self::TABLE_NAME;

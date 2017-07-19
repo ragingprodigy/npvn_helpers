@@ -36,7 +36,7 @@ class DeviceSelection extends BaseModel
      */
     public function device(): BelongsTo
     {
-        return $this->belongsTo(AvailableDevice::class, 'available_device_id');
+        return $this->belongsTo(SelectableDevice::class, 'available_device_id');
     }
 
     /**

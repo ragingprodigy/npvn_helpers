@@ -33,4 +33,12 @@ class Controller extends BaseController
     {
         return response()->json($data, $code);
     }
+
+    /**
+     * @return JsonResponse
+     */
+    protected function notFound(): JsonResponse
+    {
+        return $this->jsonResponse(['message' => 'Not Found'], 404);
+    }
 }
