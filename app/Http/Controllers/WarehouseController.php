@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use App\Models\SelectableDevice;
 use App\Models\Unbundling;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -28,6 +29,32 @@ class WarehouseController extends Controller
     public function devices(): JsonResponse
     {
         return $this->jsonResponse(SelectableDevice::all());
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function enroll(Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'imei' => 'required|string',
+            'misdn' => 'required|string|min:11|max:11'
+        ]);
+
+        $device = Device::byIMEI($request->get('imei'));
+        if (!$device || !$device->unbundled) {
+            return $this->jsonResponse(['message' => 'Device not Unbundled yet'], 400);
+        }
+
+        $device->misdn = $request->get('misdn');
+        $device->enrolled_by = $this->getUserId();
+        $device->date_enrolled = Carbon::now();
+        $device->enrolled = true;
+
+        $device->save();
+
+        return $this->jsonResponse($this->fetchDevice($device->uuid));
     }
 
     /**
@@ -141,7 +168,7 @@ class WarehouseController extends Controller
             }
         }
 
-        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling']);
+        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller']);
 
         return $device;
     }

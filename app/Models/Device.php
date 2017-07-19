@@ -42,6 +42,15 @@ class Device extends BaseModel
         'dispatched' => 'boolean',
     ];
 
+    /**
+     * @param $data
+     * @return static
+     */
+    public static function byIMEI($data)
+    {
+        return static::where('imei', $data)->first();
+    }
+
     public function enroller()
     {
         return $this->belongsTo(User::class, 'enrolled_by');

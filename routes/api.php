@@ -30,6 +30,8 @@ Route::get('check-device/{imei}', 'WarehouseController@checkIMEI');
 Route::get('unbundle/{uuid}', 'WarehouseController@unbundle');
 Route::get('unbundling/{uuid}/{category}/{value}', 'WarehouseController@unbundling');
 
+Route::post('enroll', 'WarehouseController@enroll');
+
 
 /**
  * Tools

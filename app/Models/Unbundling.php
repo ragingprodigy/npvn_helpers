@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 /**
  * Class Unbundling
@@ -27,4 +30,12 @@ class Unbundling extends BaseModel
     protected $fillable = [
         'power', 'accessories', 'assessment', 'certified_by'
     ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'certified_by');
+    }
 }
