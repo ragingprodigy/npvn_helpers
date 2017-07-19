@@ -74,14 +74,18 @@ class WarehouseController extends Controller
      */
     public function getDevice($identifier): JsonResponse
     {
-        $device = Device::where('uuid', $identifier);
+        /** @var Device $device */
+        $device = Device::where('uuid', $identifier)->first();
+
         if ($device === null) {
-            $device = Device::where('imei', $identifier)->orWhere('serial', $identifier);
+            $device = Device::where('imei', $identifier)->orWhere('serial', $identifier)->first();
         }
 
         if ($device === null) {
             return $this->notFound();
         }
+
+        $device->load(['creator', 'updater', 'deleter', 'device']);
 
         return $this->jsonResponse($device);
     }
