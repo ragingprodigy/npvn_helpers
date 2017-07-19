@@ -12,6 +12,7 @@ namespace App\Models;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Device
@@ -27,6 +28,13 @@ class Device extends BaseModel
     protected $fillable = [
         'available_device_id', 'uuid', 'imei', 'serial', 'added_by', 'updated_by', 'deleted_by',
         'enrolled', 'unbundled', 'allocated', 'dispatched'
+    ];
+
+    protected $casts = [
+        'allocated' => 'boolean',
+        'enrolled' => 'boolean',
+        'unbundled' => 'boolean',
+        'dispatched' => 'boolean',
     ];
 
     /**
@@ -59,5 +67,13 @@ class Device extends BaseModel
     public function device(): BelongsTo
     {
         return $this->belongsTo(SelectableDevice::class, 'available_device_id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function unbundling(): HasOne
+    {
+        return $this->hasOne(Unbundling::class, 'actual_device_id');
     }
 }

@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\SelectableDevice;
+use App\Models\Unbundling;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -58,6 +59,29 @@ class WarehouseController extends Controller
     }
 
     /**
+     * @param string $uuid
+     * @param string $field
+     * @param int $value
+     * @return JsonResponse
+     */
+    public function unbundling(string $uuid, string $field, int $value)
+    {
+        /** @var Device $device */
+        $device = Device::with('unbundling')->whereUuid($uuid)->first();
+
+        if ($device->unbundling === null) {
+            $device->unbundling()->create([
+                $field => $value
+            ]);
+        } else {
+            $device->unbundling->{$field} = $value;
+            $device->unbundling->save();
+        }
+
+        return $this->jsonResponse($this->fetchDevice($device->uuid));
+    }
+
+    /**
      * @param string $imei
      * @return JsonResponse
      */
@@ -72,21 +96,28 @@ class WarehouseController extends Controller
      * @param $identifier
      * @return JsonResponse
      */
-    public function getDevice($identifier): JsonResponse
+    public function getDevice(string $identifier): JsonResponse
     {
         /** @var Device $device */
+        $device = $this->fetchDevice($identifier);
+
+        if ($device === null) {
+            return $this->notFound();
+        }
+
+        return $this->jsonResponse($device);
+    }
+
+    private function fetchDevice(string $identifier)
+    {
         $device = Device::where('uuid', $identifier)->first();
 
         if ($device === null) {
             $device = Device::where('imei', $identifier)->orWhere('serial', $identifier)->first();
         }
 
-        if ($device === null) {
-            return $this->notFound();
-        }
+        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling']);
 
-        $device->load(['creator', 'updater', 'deleter', 'device']);
-
-        return $this->jsonResponse($device);
+        return $device;
     }
 }
