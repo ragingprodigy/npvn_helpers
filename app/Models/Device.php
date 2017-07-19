@@ -25,9 +25,14 @@ class Device extends BaseModel
     const TABLE_NAME = 'actual_devices';
     protected $table = self::TABLE_NAME;
 
+    protected $dates = [
+        'date_enrolled'
+    ];
+
     protected $fillable = [
         'available_device_id', 'uuid', 'imei', 'serial', 'added_by', 'updated_by', 'deleted_by',
-        'enrolled', 'unbundled', 'allocated', 'dispatched'
+        'enrolled', 'unbundled', 'allocated', 'dispatched', 'misdn', 'date_enrolled',
+        'enrolled_by'
     ];
 
     protected $casts = [
@@ -36,6 +41,11 @@ class Device extends BaseModel
         'unbundled' => 'boolean',
         'dispatched' => 'boolean',
     ];
+
+    public function enroller()
+    {
+        return $this->belongsTo(User::class, 'enrolled_by');
+    }
 
     /**
      * @return BelongsTo

@@ -13,7 +13,11 @@ class UpdateActualDeviceTable extends Migration
      */
     public function up()
     {
-        //
+        Schema::table(\App\Models\Device::TABLE_NAME, function (Blueprint $table) {
+            $table->text('misdn', 11)->nullable();
+            $table->timestampTz('date_enrolled')->nullable();
+            $table->integer('enrolled_by')->nullable();
+        });
     }
 
     /**
@@ -23,6 +27,10 @@ class UpdateActualDeviceTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table(\App\Models\Device::TABLE_NAME, function (Blueprint $table) {
+            $table->dropColumn('misdn');
+            $table->dropColumn('date_enrolled');
+            $table->dropColumn('enrolled_by');
+        });
     }
 }
