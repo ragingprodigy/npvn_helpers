@@ -79,6 +79,43 @@ class WarehouseController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    public function allocateDevice(Request $request): JsonResponse
+    {
+        $rules = [
+            'imei'      => 'required|string',
+            'lga'       => 'required|int',
+            'state'     => 'required|int',
+            'volunteer' => 'required|string|exists:' . DeviceSelection::TABLE_NAME.',id',
+        ];
+
+        $this->validate($request, $rules);
+
+        $payload = $request->only(array_keys($rules));
+        $volunteer = DeviceSelection::findOrFail($payload['volunteer']);
+
+        if ($volunteer->actual_device_id !== null) {
+            return $this->jsonResponse(['message'=>'Volunteer has been allocated a device'], 400);
+        }
+
+        $device = $this->fetchDevice($payload['imei']);
+        $volunteer->actual_device_id = $device->id;
+        $volunteer->allocated_by = $this->getUserId();
+        $volunteer->date_allocated = Carbon::now();
+
+        if (!$volunteer->save()) {
+            return $this->jsonResponse(['message'=>'Unable to assign device'], 500);
+        }
+
+        $device->allocated = true;
+        $device->save();
+
+        return $this->jsonResponse($device);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function enroll(Request $request): JsonResponse
     {
         $this->validate($request, [
@@ -201,7 +238,12 @@ class WarehouseController extends Controller
         return $this->jsonResponse($device);
     }
 
-    private function fetchDevice(string $identifier)
+    /**
+     * @param string $identifier
+     * @return Device
+     * @throws \Exception
+     */
+    private function fetchDevice(string $identifier): Device
     {
         $device = Device::where('uuid', $identifier)->first();
 

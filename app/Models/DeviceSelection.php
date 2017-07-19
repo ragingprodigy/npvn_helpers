@@ -31,9 +31,15 @@ class DeviceSelection extends BaseModel
     const TABLE_NAME = 'device_selection';
     protected $table = self::TABLE_NAME;
 
+    public $timestamps = false;
+
     protected $dates = [
         'selection_date',
         'date_allocated'
+    ];
+
+    protected $casts = [
+        'id' => 'string'
     ];
 
     /**
