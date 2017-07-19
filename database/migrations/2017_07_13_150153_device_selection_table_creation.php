@@ -26,9 +26,9 @@ class DeviceSelectionTableCreation extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('device_selection');
-        Schema::dropIfExists('devices');
-        Schema::dropIfExists('lgas');
-        Schema::dropIfExists('states');
+        Schema::dropIfExists(\App\Models\DeviceSelection::TABLE_NAME);
+        Schema::dropIfExists(\App\Models\AvailableDevice::TABLE_NAME);
+        Schema::dropIfExists(\App\Models\Lga::TABLE_NAME);
+        Schema::dropIfExists(\App\Models\State::TABLE_NAME);
     }
 }

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Device;
+use App\Models\AvailableDevice;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -22,6 +22,6 @@ class WarehouseController extends Controller
      */
     public function devices(): JsonResponse
     {
-        return $this->jsonResponse(Device::all());
+        return $this->jsonResponse(AvailableDevice::all());
     }
 }
