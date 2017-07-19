@@ -31,6 +31,10 @@ Route::get('unbundle/{uuid}', 'WarehouseController@unbundle');
 Route::get('unbundling/{uuid}/{category}/{value}', 'WarehouseController@unbundling');
 
 Route::post('enroll', 'WarehouseController@enroll');
+Route::get('states', 'WarehouseController@getStates');
+Route::get('states/{id}', 'WarehouseController@getLgas');
+
+Route::get('volunteer/{device_id}/{state_id}/{lga_id}', 'WarehouseController@nextVolunteer');
 
 
 /**

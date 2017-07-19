@@ -31,6 +31,11 @@ class DeviceSelection extends BaseModel
     const TABLE_NAME = 'device_selection';
     protected $table = self::TABLE_NAME;
 
+    protected $dates = [
+        'selection_date',
+        'date_allocated'
+    ];
+
     /**
      * @return BelongsTo
      */

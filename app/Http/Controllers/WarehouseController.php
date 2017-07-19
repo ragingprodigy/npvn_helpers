@@ -9,8 +9,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\DeviceSelection;
+use App\Models\Lga;
 use App\Models\SelectableDevice;
-use App\Models\Unbundling;
+use App\Models\State;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,6 +31,48 @@ class WarehouseController extends Controller
     public function devices(): JsonResponse
     {
         return $this->jsonResponse(SelectableDevice::all());
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getStates(): JsonResponse
+    {
+        return $this->jsonResponse(
+            State::orderBy('name', 'asc')->get()
+        );
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function getLgas($id): JsonResponse
+    {
+        return $this->jsonResponse(
+            Lga::where('state_id', $id)->orderBy('name', 'asc')->get()
+        );
+    }
+
+    /**
+     * @param int $device_id
+     * @param int $state_id
+     * @param int $lga_id
+     * @return JsonResponse
+     */
+    public function nextVolunteer(int $device_id, int $state_id, int $lga_id): JsonResponse
+    {
+        $volunteer = DeviceSelection::where('avaliable_device_id', $device_id)
+            ->where('state_id', $state_id)->where('lga_id', $lga_id)
+            ->where('actual_device_id', null)
+            ->orderBy('selection_date', 'asc')
+            ->first();
+
+        if (!$volunteer) {
+            return $this->jsonResponse(['message'=>'No more Volunteers for this device type'], 400);
+        }
+
+        return $this->jsonResponse($volunteer);
     }
 
     /**
