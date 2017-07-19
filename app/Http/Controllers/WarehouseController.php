@@ -121,10 +121,10 @@ class WarehouseController extends Controller
     public function getDevice(string $identifier): JsonResponse
     {
         /** @var Device $device */
-        $device = $this->fetchDevice($identifier);
-
-        if ($device === null) {
-            return $this->notFound();
+        try {
+            $device = $this->fetchDevice($identifier);
+        } catch (\Exception $e) {
+            return $this->jsonResponse(['message' => $e->getMessage()], 404);
         }
 
         return $this->jsonResponse($device);
@@ -136,6 +136,9 @@ class WarehouseController extends Controller
 
         if ($device === null) {
             $device = Device::where('imei', $identifier)->orWhere('serial', $identifier)->first();
+            if (!$device) {
+                throw new \Exception('Device not found!');
+            }
         }
 
         $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling']);
