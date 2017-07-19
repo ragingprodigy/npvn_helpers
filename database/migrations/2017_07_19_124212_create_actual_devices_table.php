@@ -26,8 +26,8 @@ class CreateActualDevicesTable extends Migration
             $table->boolean('dispatched')->default(false);
 
             $table->integer('added_by');
-            $table->integer('updated_by');
-            $table->integer('deleted_by');
+            $table->integer('updated_by')->nullable();
+            $table->integer('deleted_by')->nullable();
 
             $table->softDeletesTz();
             $table->timestampsTz();

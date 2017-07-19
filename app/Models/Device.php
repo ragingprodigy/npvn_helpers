@@ -21,4 +21,9 @@ class Device extends BaseModel
 {
     const TABLE_NAME = 'actual_devices';
     protected $table = self::TABLE_NAME;
+
+    protected $fillable = [
+        'available_device_id', 'uuid', 'imei', 'serial', 'added_by', 'updated_by', 'deleted_by',
+        'enrolled', 'unbundled', 'allocated', 'dispatched'
+    ];
 }

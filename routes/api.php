@@ -22,6 +22,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  */
 Route::post('login', 'AuthController@login');
 Route::get('list-devices', 'WarehouseController@devices');
+Route::post('devices', 'WarehouseController@registerDevice');
+
 Route::get('devices/{identifier}', 'WarehouseController@getDevice');
 Route::get('check-device/{imei}', 'WarehouseController@checkIMEI');
 
