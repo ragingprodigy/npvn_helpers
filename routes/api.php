@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * Device Distro API
  */
 Route::post('login', 'AuthController@login');
+Route::get('dashboard', 'WarehouseController@dashboard');
 Route::get('list-devices', 'WarehouseController@devices');
 Route::post('devices', 'WarehouseController@registerDevice');
 

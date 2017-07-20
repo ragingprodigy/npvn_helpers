@@ -14,6 +14,7 @@ use App\Models\DeviceSelection;
 use App\Models\Lga;
 use App\Models\SelectableDevice;
 use App\Models\State;
+use App\Models\Unbundling;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,6 +27,25 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class WarehouseController extends Controller
 {
+    /**
+     * @return JsonResponse
+     */
+    public function dashboard(): JsonResponse
+    {
+        $dash = Device::query()
+            ->selectRaw('SUM(IF(unbundled=1, 1, 0)) AS _unbundled, SUM(IF(enrolled=1, 1, 0)) AS _enrolled,
+            SUM(IF(allocated=1, 1, 0)) AS _allocated, SUM(IF(dispatched=1, 1, 0)) AS _dispatched')
+            ->first();
+
+        $unbundling = Unbundling::query()
+            ->selectRaw('SUM(IF((power=0 AND accessories=1) OR (accessories=0 AND assessment=1), 1, 0)) 
+            as defective')->first();
+        
+        $dash->defective = $unbundling->defective ?? 0;
+
+        return $this->jsonResponse($dash);
+    }
+    
     /**
      * @return JsonResponse
      */

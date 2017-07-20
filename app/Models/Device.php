@@ -40,6 +40,10 @@ class Device extends BaseModel
         'enrolled' => 'boolean',
         'unbundled' => 'boolean',
         'dispatched' => 'boolean',
+        '_allocated' => 'integer',
+        '_enrolled' => 'integer',
+        '_unbundled' => 'integer',
+        '_dispatched' => 'integer',
     ];
 
     /**
