@@ -46,6 +46,22 @@ class DeviceSelection extends BaseModel
     /**
      * @return BelongsTo
      */
+    public function center(): BelongsTo
+    {
+        return $this->belongsTo(CollectionCenter::class, 'collection_center_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function dispatcher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dispatched_by');
+    }
+
+    /**
+     * @return BelongsTo
+     */
     public function device(): BelongsTo
     {
         return $this->belongsTo(Device::class, 'actual_device_id');

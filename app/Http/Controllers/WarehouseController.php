@@ -255,9 +255,36 @@ class WarehouseController extends Controller
             }
         }
 
-        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller', 'volunteer', 'volunteer.allocator', 'volunteer.lga']);
+        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller',
+            'volunteer', 'volunteer.allocator', 'volunteer.lga', 'volunteer.dispatcher', 'volunteer.center'
+        ]);
 
         return $device;
+    }
+
+    /**
+     * @param string $id
+     * @param int $collectionCenter
+     * @return JsonResponse
+     */
+    public function dispatchDevice(string $id, int $collectionCenter): JsonResponse
+    {
+        $volunteer = DeviceSelection::findOrFail($id);
+        $volunteer->collection_center_id = $collectionCenter;
+        $volunteer->dispatched_by = $this->getUserId();
+        $volunteer->date_dispatched = Carbon::now();
+
+        if (!$volunteer->save()) {
+            return $this->jsonResponse(['message' => 'Unable to dispatch device'], 500);
+        }
+
+        $device = Device::findOrFail($volunteer->actual_device_id);
+        $device->dispatched = true;
+        $device->save();
+
+        return $this->jsonResponse(
+            $this->fetchDevice($device->uuid)
+        );
     }
 
     /**
