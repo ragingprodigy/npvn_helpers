@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\CollectionCenter;
 use App\Models\Device;
 use App\Models\DeviceSelection;
 use App\Models\Lga;
@@ -254,8 +255,80 @@ class WarehouseController extends Controller
             }
         }
 
-        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller', 'volunteer', 'volunteer.allocator']);
+        $device->load(['creator', 'updater', 'deleter', 'device', 'unbundling', 'unbundling.user', 'enroller', 'volunteer', 'volunteer.allocator', 'volunteer.lga']);
 
         return $device;
+    }
+
+    /**
+     * @param string $id
+     * @return JsonResponse
+     */
+    public function pickupLocations(string $id): JsonResponse
+    {
+        $volunteer = DeviceSelection::with('lga')->findOrFail($id);
+        $centers = CollectionCenter::where('state', $volunteer->state_id)->get();
+
+        $data = [];
+        $distances = [];
+
+        $volArray = $volunteer->toArray();
+
+        foreach ($centers as $center) {
+            $consideredLocation = $center->geocoded_address ?? $center->lga->geocoded_address ?? '';
+
+            if (!empty($consideredLocation)) {
+                $distances[$center->id] = $this->distance(
+                    explode(', ', $volArray['lga']['geocoded_address']),
+                    explode(
+                        ', ',
+                        $consideredLocation
+                    )
+                );
+            }
+        }
+
+        asort($distances);
+        $picked = array_slice($distances, 0, 3, true);
+        $ct = [];
+
+        foreach ($picked as $loc => $dist) {
+            $ct[] = $loc;
+        }
+
+        $result = CollectionCenter::whereIn('id', $ct)->get()->keyBy('id');
+        foreach ($ct as $value) {
+            $data[] = $result[$value];
+        }
+
+        return $this->jsonResponse(
+            $data
+        );
+    }
+
+    /**
+     * @param array $fromLocation
+     * @param array $toLocation
+     *
+     * @return float
+     */
+    private function distance(array $fromLocation, array $toLocation)
+    {
+        [ $lat1, $lon1 ] = $fromLocation;
+        [ $lat2, $lon2 ] = $toLocation;
+
+        $lat1 = (float) $lat1;
+        $lat2 = (float) $lat2;
+        $lon1 = (float) $lon1;
+        $lon2 = (float) $lon2;
+
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1))
+            * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+
+        return ($miles * 1.609344);
     }
 }

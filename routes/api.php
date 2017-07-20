@@ -37,6 +37,7 @@ Route::get('states/{id}', 'WarehouseController@getLgas');
 Route::get('volunteer/{device_id}/{state_id}/{lga_id}', 'WarehouseController@nextVolunteer');
 
 Route::post('allocate', 'WarehouseController@allocateDevice');
+Route::get('centers/{id}', 'WarehouseController@pickupLocations');
 
 
 /**
