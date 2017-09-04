@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 
 use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
+use Maatwebsite\Excel\Classes\PHPExcel;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use Maatwebsite\Excel\Writers\LaravelExcelWriter;
@@ -47,36 +48,52 @@ class FileCompareJob extends AbstractJob
         // Read File Contents
         $fileContents = [];
 
-        foreach ($this->fileNames as $name) {
+        \Log::info('Reading files...' . print_r($this->fileNames, true));
+        foreach ($this->fileNames as $k => $name) {
             Excel::load('storage/app/' . $name, function (LaravelExcelReader $reader) use (&$fileContents) {
                 $fileContents[] = $reader->get();
             });
+            \Log::info('File ' . $k . ' read...');
         }
 
         $setOne = collect($fileContents[0])->keyBy('bvn');
         $setTwo = collect($fileContents[1])->keyBy('bvn');
 
+        $opName = '';
+
         switch($this->compareOption) {
             case 'A':
+                \Log::info('Performing A\'');
+                $opName = 'A\' ';
                 // Get records only in set One
                 $newData = collect($setOne->filter(function ($row) use ($setTwo) {
                     return $setTwo->get($row->bvn) === null;
                 }));
+                \Log::info(sprintf('Retrieved %d records', $newData->count()));
                 break;
             case 'B':
                 // Keep set One constant and get records unique to set Two
+                \Log::info('Performing B\'');
+                $opName = 'B\' ';
                 $newData = collect($setTwo->filter(function ($row) use ($setOne) {
                     return $setOne->get($row->bvn) === null;
                 }));
+                \Log::info(sprintf('Retrieved %d records', $newData->count()));
                 break;
             case 'C':
                 // Fetch A n B
+                $opName = 'A n B ';
+                \Log::info('Performing A n B');
                 $newData = $setOne->intersectKey($setTwo);
+                \Log::info(sprintf('Retrieved %d records', $newData->count()));
                 break;
             case 'D':
             default:
                 // Fetch A u B
+                $opName = 'A u B ';
+                \Log::info('Performing A U B');
                 $newData = $setTwo->union($setOne)->unique('bvn');
+                \Log::info(sprintf('Retrieved %d records', $newData->count()));
                 break;
         }
 
@@ -85,7 +102,7 @@ class FileCompareJob extends AbstractJob
         $setTwo = null;
         $fileContents = [];
 
-        $exportFileName = 'merged_data_' . time();
+        $exportFileName = 'merged_data_' . $opName . microtime();
         $outDir = base_path('storage/exports');
 
         Excel::create($exportFileName, function (LaravelExcelWriter $excel) use ($newData, $outDir, $exportFileName) {

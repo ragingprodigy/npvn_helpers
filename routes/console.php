@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CollectionCenter;
+use App\Models\Lga;
 use App\Models\LocalGovernment;
 use Illuminate\Support\Facades\Artisan;
 use Maatwebsite\Excel\Facades\Excel;
@@ -263,6 +264,25 @@ Artisan::command('location-cleanup', function () {
     }
 });
 
+Artisan::command('spec-lga', function () {
+    $lgas = Lga::with('state')
+        ->where('geocoded_address', null)->get();
+
+    foreach ($lgas as $key => $lga) {
+        if ($lga->geocoded_address === null) {
+            $this->comment(sprintf('%d: Doing lookup for %s', $key, $lga->name . ', ' . $lga->state->name));
+            $lookup = geocodeAddress($lga->name . ', ' . $lga->state->name);
+
+            if (count($lookup['results']) > 0) {
+                $lga->geocoded_address = implode(', ', $lookup['results'][0]['geometry']['location']);
+                $lga->save();
+            }
+        }
+    }
+
+    $this->comment('Done');
+});
+
 Artisan::command('device-location-task', function () {
     Excel::selectSheetsByIndex(0)->load('npvn_location_data.xlsx', function (LaravelExcelReader $reader) {
         $reader->noHeading();
@@ -296,7 +316,7 @@ Artisan::command('device-location-task', function () {
                 if (!$center->lga_id) {
                     $this->info('Setting LGA ID');
                     // Find LGA
-                    $lga = LocalGovernment::whereName(strtoupper($location[1]))->first();
+                    $lga = \App\Models\Lga::whereName($location[1])->first();
 
                     if ($lga) {
                         $center->lga_id = $lga->id;
@@ -308,4 +328,4 @@ Artisan::command('device-location-task', function () {
 
         $this->comment('Done!');
     });
-})->describe('Determine Device Pickup Locations');
+});

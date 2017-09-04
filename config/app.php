@@ -184,6 +184,8 @@ return [
 
         GoogleMapsServiceProvider::class,
 
+        \Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+
     ],
 
     /*
@@ -234,7 +236,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-        'GoogleMaps' => GoogleMapsFacade::class
+        'GoogleMaps' => GoogleMapsFacade::class,
+        'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
+        'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory'
     ],
 
 ];
