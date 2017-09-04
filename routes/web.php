@@ -12,7 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('index');
+//    return view('index');
+    return view('bvn_form');
 });
 
 Route::get('/bvn_check', function () {
